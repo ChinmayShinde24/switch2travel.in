@@ -8,7 +8,6 @@ import {
   Open_Sans,
   Roboto_Condensed,
 } from "next/font/google"
-import { Navbar } from "@/components/layout/navbar"
 import { Providers } from "@/components/layout/providers"
 import { cn } from "@/lib/utils"
 
@@ -56,7 +55,11 @@ export const metadata: Metadata = {
   description: "Travel made easier",
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html
       lang="en"
@@ -72,12 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        <Providers>
-          <Navbar />
-          <main className="page-padding-x flex min-h-0 flex-1 flex-col pb-3 md:pb-4">
-            {children}
-          </main>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

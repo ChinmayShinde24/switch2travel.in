@@ -3,15 +3,26 @@ import { connectDB } from "@/lib/db"
 import { User } from "@/models/User"
 import { signupSchema } from "@/lib/auth-validation"
 import {
-  createAuthToken,
   hashPassword,
-  setAuthCookie,
+  setAuthSession,
   toPublicUser,
 } from "@/lib/auth-server"
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
+
+    // Security: public signup can never create admins (ignore/reject role)
+    if (body?.role === "admin") {
+      return NextResponse.json(
+        {
+          error:
+            "Admin accounts cannot be created from signup. Use the admin bootstrap API.",
+        },
+        { status: 403 }
+      )
+    }
+
     const parsed = signupSchema.safeParse(body)
 
     if (!parsed.success) {
@@ -21,6 +32,7 @@ export async function POST(request: Request) {
       )
     }
 
+    // Always force user — never trust client role
     const { name, phone, email, password } = parsed.data
     await connectDB()
 
@@ -45,11 +57,10 @@ export async function POST(request: Request) {
       role: "user",
     })
 
-    const token = await createAuthToken({
+    await setAuthSession({
       _id: String(user._id),
-      role: user.role as "user" | "admin",
+      role: "user",
     })
-    await setAuthCookie(token)
 
     return NextResponse.json(
       { user: toPublicUser(user) },

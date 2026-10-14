@@ -14,7 +14,8 @@ import type { LoginInput, PublicUser, SignupInput } from "@/types/user"
 type AuthContextValue = {
   user: PublicUser | null
   loading: boolean
-  login: (input: LoginInput) => Promise<void>
+  isAdmin: boolean
+  login: (input: LoginInput) => Promise<PublicUser>
   signup: (input: SignupInput) => Promise<void>
   logout: () => Promise<void>
   refresh: () => Promise<void>
@@ -35,7 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch("/api/auth/me", { cache: "no-store" })
+      const response = await fetch("/api/auth/me", {
+        cache: "no-store",
+        credentials: "include",
+      })
       const data = (await response.json()) as { user: PublicUser | null }
       setUser(data.user)
     } catch {
@@ -54,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
+      credentials: "include",
     })
 
     if (!response.ok) {
@@ -62,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const data = (await response.json()) as { user: PublicUser }
     setUser(data.user)
+    return data.user
   }, [])
 
   const signup = useCallback(async (input: SignupInput) => {
@@ -69,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
+      credentials: "include",
     })
 
     if (!response.ok) {
@@ -84,9 +91,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const isAdmin = user?.role === "admin"
+
   const value = useMemo(
-    () => ({ user, loading, login, signup, logout, refresh }),
-    [user, loading, login, signup, logout, refresh]
+    () => ({ user, loading, isAdmin, login, signup, logout, refresh }),
+    [user, loading, isAdmin, login, signup, logout, refresh]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

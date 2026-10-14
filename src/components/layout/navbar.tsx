@@ -1,3 +1,4 @@
+import { NavbarAdminLink } from "@/components/layout/navbar-admin-link"
 import { NavbarCallUs } from "@/components/layout/navbar-call-us"
 import { NavbarLinks } from "@/components/layout/navbar-links"
 import { NavbarLogo } from "@/components/layout/navbar-logo"
@@ -16,6 +17,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <NavbarCallUs />
+          <NavbarAdminLink />
           <NavbarMobile />
           <NavbarProfile />
         </div>

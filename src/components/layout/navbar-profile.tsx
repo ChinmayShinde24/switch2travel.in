@@ -57,6 +57,14 @@ export function NavbarProfile() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          {user?.role === "admin" ? (
+            <DropdownMenuItem
+              render={<Link href="/admin" />}
+              className="cursor-pointer font-medium"
+            >
+              Admin
+            </DropdownMenuItem>
+          ) : null}
           {user ? (
             <DropdownMenuItem
               className="cursor-pointer"

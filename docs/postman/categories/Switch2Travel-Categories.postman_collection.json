@@ -1,0 +1,118 @@
+{
+  "info": {
+    "name": "Switch2Travel — Categories",
+    "description": "Admin category APIs. Login as admin first so s2t_token cookie is set.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "categoryId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Admin login (cookie)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"1122334455\",\n  \"password\": \"yourpassword\"\n}"
+        },
+        "url": "{{baseUrl}}/api/admin/auth/login",
+        "description": "Sets httpOnly cookies including s2t_token, s2t_uid, s2t_role."
+      }
+    },
+    {
+      "name": "1. Upload auth (ImageKit)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/admin/uploads/auth",
+        "description": "Returns token, expire, signature, publicKey, folder for ImageKit upload."
+      }
+    },
+    {
+      "name": "2. Create category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const id = pm.response.json().category?.id;",
+              "  if (id) pm.collectionVariables.set('categoryId', id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Best Sellers\",\n  \"image\": {\n    \"url\": \"https://ik.imagekit.io/q36ywbrzq/switch2travel/categories/best-sellers.jpg\",\n    \"fileId\": \"REPLACE_IMAGEKIT_FILE_ID\",\n    \"filePath\": \"/switch2travel/categories/best-sellers.jpg\"\n  },\n  \"status\": \"active\"\n}"
+        },
+        "url": "{{baseUrl}}/api/admin/categories",
+        "description": "Creates category. Saves categoryId into collection variable on 201."
+      }
+    },
+    {
+      "name": "3. Get all categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "categories"],
+          "query": [
+            {
+              "key": "status",
+              "value": "active",
+              "disabled": true,
+              "description": "Optional: active | inactive"
+            }
+          ]
+        },
+        "description": "Lists all categories. Enable status query to filter."
+      }
+    },
+    {
+      "name": "4. Edit category (name / image)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Best Sellers Updated\",\n  \"image\": {\n    \"url\": \"https://ik.imagekit.io/q36ywbrzq/switch2travel/categories/new.jpg\",\n    \"fileId\": \"REPLACE_IMAGEKIT_FILE_ID\",\n    \"filePath\": \"/switch2travel/categories/new.jpg\"\n  }\n}"
+        },
+        "url": "{{baseUrl}}/api/admin/categories/{{categoryId}}",
+        "description": "Update name and/or image. Provide at least one field."
+      }
+    },
+    {
+      "name": "5. Update status",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"inactive\"\n}"
+        },
+        "url": "{{baseUrl}}/api/admin/categories/{{categoryId}}/status",
+        "description": "status: active | inactive"
+      }
+    },
+    {
+      "name": "6. Delete category",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/admin/categories/{{categoryId}}",
+        "description": "Hard-deletes the category document."
+      }
+    }
+  ]
+}

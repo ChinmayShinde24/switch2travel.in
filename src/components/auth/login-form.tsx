@@ -19,8 +19,8 @@ export function LoginForm() {
     setPending(true)
 
     try {
-      await login({ phone: phone.trim(), password })
-      window.location.assign("/")
+      const loggedIn = await login({ phone: phone.trim(), password })
+      window.location.assign(loggedIn.role === "admin" ? "/admin" : "/")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to sign in")
       setPending(false)

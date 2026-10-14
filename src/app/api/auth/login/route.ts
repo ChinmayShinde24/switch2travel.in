@@ -3,8 +3,7 @@ import { connectDB } from "@/lib/db"
 import { User } from "@/models/User"
 import { loginSchema } from "@/lib/auth-validation"
 import {
-  createAuthToken,
-  setAuthCookie,
+  setAuthSession,
   toPublicUser,
   verifyPassword,
 } from "@/lib/auth-server"
@@ -54,13 +53,12 @@ export async function POST(request: Request) {
       )
     }
 
-    const token = await createAuthToken({
+    const token = await setAuthSession({
       _id: String(user._id),
       role: user.role as "user" | "admin",
     })
-    await setAuthCookie(token)
 
-    return NextResponse.json({ user: toPublicUser(user) })
+    return NextResponse.json({ user: toPublicUser(user), token })
   } catch (error) {
     console.error("Login error:", error)
     return NextResponse.json(

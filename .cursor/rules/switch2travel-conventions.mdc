@@ -1,0 +1,24 @@
+---
+description: Switch2Travel project conventions — backend flow, shadcn UI, brand, Context usage
+alwaysApply: true
+---
+
+# Switch2Travel conventions (always apply)
+
+## Backend order
+Always: `src/types` → `src/models` → `src/lib/*-validation.ts` / helpers → `src/app/api/**/route.ts`.
+Do not put domain types only inside routes when a types/model layer is needed.
+Public signup never creates `admin`. Admin create: `POST /api/admin/auth/create` + `ADMIN_SETUP_SECRET` (Postman only).
+
+## UI
+Prefer shadcn from `src/components/ui/`. If missing: `npx shadcn@latest add <component> --yes` and install required npm deps. Compose in feature folders (`home/`, `admin/`, `layout/`).
+
+## Brand (every new component)
+Match existing logo, color, and typography — no parallel design system.
+- Logo: `/public/final.png` (same as navbar/auth); use it in shells/headers/account chips instead of text-only wordmarks. Dark text on the mark — on dark shells place it inside a light `BentoCell` / white card, never on `slate-950` alone.
+- Primary: `sky-600` / `sky-700` CTAs; accents `sky-700` (light) / `sky-400` (dark). Cyan is secondary glow only.
+- Fonts: `font-display` titles, `font-lato` body, `font-open-sans` uppercase eyebrows. Surfaces: slate-100 + white cards, or slate-950 dark shells.
+Admin must follow the same brand as the public site.
+
+## State
+Keep Auth Context (`useAuth`). No Redux by default. Local state for forms. New Context only for real cross-tree shared client state. Server lists → API (+ TanStack Query later), not Context.

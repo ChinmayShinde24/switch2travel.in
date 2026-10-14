@@ -4,7 +4,12 @@ import bcrypt from "bcryptjs"
 import type { AuthTokenPayload, PublicUser, UserRole } from "@/types/user"
 import type { UserDocument } from "@/models/User"
 
+/** JWT session cookie (opaque) — contains signed `_id` + `role` claims. */
 export const AUTH_COOKIE = "s2t_token"
+/** Plain httpOnly copy of user `_id` for DevTools / server reads. */
+export const AUTH_ID_COOKIE = "s2t_uid"
+/** Plain httpOnly copy of `role` for DevTools / server reads. */
+export const AUTH_ROLE_COOKIE = "s2t_role"
 
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET
@@ -42,6 +47,7 @@ const AUTH_COOKIE_OPTIONS = {
 export async function createAuthToken(payload: AuthTokenPayload) {
   const expiresIn = process.env.JWT_EXPIRES_IN || "7d"
 
+  // Explicitly embed `_id` and `role` in the JWT payload
   return new SignJWT({
     _id: payload._id,
     role: payload.role,
@@ -70,6 +76,29 @@ export async function verifyAuthToken(token: string) {
   return { _id, role } satisfies AuthTokenPayload
 }
 
+/** Login / signup: save JWT + `_id` + `role` cookies (all httpOnly). Returns JWT for Postman/Bearer use. */
+export async function setAuthSession(payload: AuthTokenPayload) {
+  const token = await createAuthToken(payload)
+  const cookieStore = await cookies()
+  const maxAge = 60 * 60 * 24 * 7
+
+  cookieStore.set(AUTH_COOKIE, token, {
+    ...AUTH_COOKIE_OPTIONS,
+    maxAge,
+  })
+  cookieStore.set(AUTH_ID_COOKIE, payload._id, {
+    ...AUTH_COOKIE_OPTIONS,
+    maxAge,
+  })
+  cookieStore.set(AUTH_ROLE_COOKIE, payload.role, {
+    ...AUTH_COOKIE_OPTIONS,
+    maxAge,
+  })
+
+  return token
+}
+
+/** @deprecated Prefer setAuthSession — kept for any direct token callers. */
 export async function setAuthCookie(token: string) {
   const cookieStore = await cookies()
   cookieStore.set(AUTH_COOKIE, token, {
@@ -80,12 +109,16 @@ export async function setAuthCookie(token: string) {
 
 export async function clearAuthCookie() {
   const cookieStore = await cookies()
-  // Overwrite then delete so the browser fully drops the session cookie
-  cookieStore.set(AUTH_COOKIE, "", {
+  const cleared = {
     ...AUTH_COOKIE_OPTIONS,
     maxAge: 0,
-  })
-  cookieStore.delete(AUTH_COOKIE)
+  }
+
+  // Clear JWT + identity cookies completely on logout
+  for (const name of [AUTH_COOKIE, AUTH_ID_COOKIE, AUTH_ROLE_COOKIE]) {
+    cookieStore.set(name, "", cleared)
+    cookieStore.delete(name)
+  }
 }
 
 export async function getAuthTokenFromCookies() {

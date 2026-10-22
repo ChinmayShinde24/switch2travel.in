@@ -8,10 +8,26 @@ import { HeroDestinationCarousel } from "@/components/home/hero-destination-caro
 import { HeroMobileCities } from "@/components/home/hero-mobile-cities"
 import { HeroSpotlightProvider } from "@/components/home/hero-spotlight"
 import { heroBackgroundImage } from "@/data/hero-destinations"
+import {
+  citiesToHeroDestinations,
+  tripCountByCityId,
+} from "@/lib/hero-from-cities"
+import type { City } from "@/types/city"
+import type { Trip } from "@/types/trip"
 
-export function HeroSection() {
+type HeroSectionProps = {
+  cities: City[]
+  trips: Trip[]
+}
+
+export function HeroSection({ cities, trips }: HeroSectionProps) {
+  const destinations = citiesToHeroDestinations(
+    cities,
+    tripCountByCityId(trips)
+  )
+
   return (
-    <HeroSpotlightProvider>
+    <HeroSpotlightProvider destinations={destinations}>
       <section
         aria-label="Featured destinations"
         className="page-padding-x flex min-h-[calc(100dvh-4.5rem)] flex-1 flex-col pt-2 md:min-h-[calc(100dvh-5rem)]"

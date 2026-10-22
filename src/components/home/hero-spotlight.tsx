@@ -10,15 +10,16 @@ import {
   type ReactNode,
 } from "react"
 import { useReducedMotion } from "motion/react"
-import { heroDestinations } from "@/data/hero-destinations"
+import type { HeroDestination } from "@/data/hero-destinations"
 
 const AUTOPLAY_MS = 3000
 
 type HeroSpotlightContextValue = {
+  destinations: HeroDestination[]
   activeIndex: number
   progress: number
   total: number
-  destination: (typeof heroDestinations)[number]
+  destination: HeroDestination | undefined
   goTo: (index: number) => void
   next: () => void
   prev: () => void
@@ -28,14 +29,21 @@ const HeroSpotlightContext = createContext<HeroSpotlightContextValue | null>(
   null
 )
 
-export function HeroSpotlightProvider({ children }: { children: ReactNode }) {
+export function HeroSpotlightProvider({
+  destinations,
+  children,
+}: {
+  destinations: HeroDestination[]
+  children: ReactNode
+}) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const reduceMotion = useReducedMotion()
-  const total = heroDestinations.length
+  const total = destinations.length
 
   const goTo = useCallback(
     (index: number) => {
+      if (total === 0) return
       setActiveIndex((index + total) % total)
       setProgress(0)
     },
@@ -46,7 +54,7 @@ export function HeroSpotlightProvider({ children }: { children: ReactNode }) {
   const prev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo])
 
   useEffect(() => {
-    if (reduceMotion) return
+    if (reduceMotion || total <= 1) return
 
     const started = performance.now()
     let frame = 0
@@ -66,17 +74,20 @@ export function HeroSpotlightProvider({ children }: { children: ReactNode }) {
     return () => cancelAnimationFrame(frame)
   }, [activeIndex, reduceMotion, total])
 
+  const safeIndex = total === 0 ? 0 : activeIndex % total
+
   const value = useMemo(
     () => ({
-      activeIndex,
+      destinations,
+      activeIndex: safeIndex,
       progress,
       total,
-      destination: heroDestinations[activeIndex],
+      destination: destinations[safeIndex],
       goTo,
       next,
       prev,
     }),
-    [activeIndex, goTo, next, prev, progress, total]
+    [destinations, goTo, next, prev, progress, safeIndex, total]
   )
 
   return (

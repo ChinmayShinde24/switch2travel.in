@@ -45,7 +45,6 @@ export async function GET(request: Request) {
     const uploadAuth = getImageKitUploadAuth()
     return NextResponse.json({
       ...uploadAuth,
-      urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT ?? null,
       folder,
       purpose,
     })

@@ -57,6 +57,15 @@ export async function listActiveCities(): Promise<City[]> {
   return docs.map(toPublicCity)
 }
 
+export async function getActiveCityBySlug(slug: string): Promise<City | null> {
+  const doc = await CityModel.findOne({
+    slug: slug.toLowerCase(),
+    status: "active",
+  })
+  if (!doc) return null
+  return toPublicCity(doc)
+}
+
 export async function assertCityExists(cityId: string) {
   const doc = await CityModel.findById(cityId).lean()
   if (!doc) {

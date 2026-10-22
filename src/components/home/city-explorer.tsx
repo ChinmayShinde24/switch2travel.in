@@ -43,8 +43,8 @@ export function CityExplorer({ cities, tripCountByCity }: CityExplorerProps) {
             </span>
           </h2>
           <p className="font-lato mx-auto mt-3 max-w-xl text-base text-slate-500 sm:text-lg">
-            Pick a place that calls you — open trips for that city without
-            changing the featured list above.
+            Pick a city to see every package available there — same destinations
+            as the hero above.
           </p>
         </div>
 

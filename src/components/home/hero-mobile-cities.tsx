@@ -2,12 +2,12 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useHeroSpotlight } from "@/components/home/hero-spotlight"
-import { heroDestinations } from "@/data/hero-destinations"
 import { cn } from "@/lib/utils"
 
 export function HeroMobileCities() {
-  const { activeIndex, goTo } = useHeroSpotlight()
+  const { destinations, activeIndex } = useHeroSpotlight()
   const scrollerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -19,6 +19,8 @@ export function HeroMobileCities() {
       item.offsetLeft - (scroller.clientWidth / 2 - item.clientWidth / 2)
     scroller.scrollTo({ left, behavior: "smooth" })
   }, [activeIndex])
+
+  if (destinations.length === 0) return null
 
   return (
     <div className="lg:hidden">
@@ -36,14 +38,13 @@ export function HeroMobileCities() {
         className="flex gap-4 overflow-x-auto overscroll-x-contain px-0.5 pb-1 touch-pan-x scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
-        {heroDestinations.map((destination, index) => {
+        {destinations.map((destination, index) => {
           const active = index === activeIndex
 
           return (
-            <button
+            <Link
               key={destination.id}
-              type="button"
-              onClick={() => goTo(index)}
+              href={destination.href}
               className="flex w-[4.85rem] shrink-0 flex-col items-center gap-2 outline-none focus-visible:ring-[3px] focus-visible:ring-cyan-200/50"
               aria-current={active ? "true" : undefined}
             >
@@ -75,7 +76,7 @@ export function HeroMobileCities() {
               >
                 {destination.title}
               </span>
-            </button>
+            </Link>
           )
         })}
       </div>

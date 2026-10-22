@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
+      <HeroSection cities={cities} trips={trips} />
       <HomeDiscover
         categories={categories}
         cities={cities}

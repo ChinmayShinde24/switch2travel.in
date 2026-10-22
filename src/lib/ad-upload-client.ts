@@ -9,6 +9,7 @@ type UploadAuthResponse = {
   signature: string
   publicKey: string
   folder: string
+  urlEndpoint?: string | null
   error?: string
 }
 
@@ -32,6 +33,7 @@ export async function uploadAdImage(file: File): Promise<AdImage> {
     signature: auth.signature,
     publicKey: auth.publicKey,
     folder: auth.folder,
+    ...(auth.urlEndpoint ? { urlEndpoint: auth.urlEndpoint } : {}),
   })
 
   if (!result.url || !result.fileId || !result.filePath) {

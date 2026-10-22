@@ -10,6 +10,7 @@ type UploadAuthResponse = {
   signature: string
   publicKey: string
   folder: string
+  urlEndpoint?: string | null
   error?: string
 }
 
@@ -35,6 +36,7 @@ async function uploadWithAuth(
     signature: auth.signature,
     publicKey: auth.publicKey,
     folder: auth.folder,
+    ...(auth.urlEndpoint ? { urlEndpoint: auth.urlEndpoint } : {}),
   })
 
   if (!result.url || !result.fileId || !result.filePath) {

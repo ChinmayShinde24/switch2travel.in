@@ -1,4 +1,3 @@
-import { heroCities as cities } from "@/data/hero-destinations"
-
-export const heroCities = cities
-export type HeroCity = (typeof heroCities)[number]
+/** @deprecated Names now come from live cities via HeroSpotlightProvider. */
+export const heroCities: string[] = []
+export type HeroCity = string

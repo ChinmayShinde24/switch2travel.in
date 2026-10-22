@@ -10,11 +10,11 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { HeroDestinationCard } from "@/components/home/hero-destination-card"
 import { useHeroSpotlight } from "@/components/home/hero-spotlight"
 import { Button } from "@/components/ui/button"
-import { heroDestinations } from "@/data/hero-destinations"
 import { cn } from "@/lib/utils"
 
 export function HeroDestinationCarousel() {
-  const { activeIndex, progress, total, goTo, next, prev } = useHeroSpotlight()
+  const { destinations, activeIndex, progress, total, goTo, next, prev } =
+    useHeroSpotlight()
   const scrollerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -27,6 +27,8 @@ export function HeroDestinationCarousel() {
       behavior: "smooth",
     })
   }, [activeIndex])
+
+  if (destinations.length === 0) return null
 
   return (
     <motion.div
@@ -53,7 +55,7 @@ export function HeroDestinationCarousel() {
       </div>
 
       <div className="relative -mx-1 flex items-end gap-4 overflow-x-auto px-1 pb-1 sm:gap-5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {heroDestinations.map((destination, index) => {
+        {destinations.map((destination, index) => {
           const active = index === activeIndex
           return (
             <button
@@ -96,7 +98,7 @@ export function HeroDestinationCarousel() {
         ref={scrollerRef}
         className="relative flex snap-x snap-mandatory gap-4 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {heroDestinations.map((destination, index) => (
+        {destinations.map((destination, index) => (
           <div key={destination.id} className="snap-start">
             <HeroDestinationCard
               destination={destination}

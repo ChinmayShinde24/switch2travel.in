@@ -8,7 +8,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 export function HeroCityRotator() {
   const { destination } = useHeroSpotlight()
   const reduceMotion = useReducedMotion()
-  const city = destination.title
+  const city = destination?.title ?? "India"
 
   return (
     <span

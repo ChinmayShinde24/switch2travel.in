@@ -1,5 +1,14 @@
 import { getUploadAuthParams } from "@imagekit/next/server"
 
+/** Server-only URL endpoint (not NEXT_PUBLIC_). */
+export function getImageKitUrlEndpoint() {
+  return (
+    process.env.NEXT_IMAGEKIT_URL_ENDPOINT?.trim() ||
+    process.env.IMAGEKIT_URL_ENDPOINT?.trim() ||
+    null
+  )
+}
+
 export function getImageKitUploadAuth() {
   const privateKey = process.env.IMAGEKIT_PRIVATE_KEY
   const publicKey = process.env.IMAGEKIT_PUBLIC_KEY
@@ -13,5 +22,11 @@ export function getImageKitUploadAuth() {
     publicKey,
   })
 
-  return { token, expire, signature, publicKey }
+  return {
+    token,
+    expire,
+    signature,
+    publicKey,
+    urlEndpoint: getImageKitUrlEndpoint(),
+  }
 }

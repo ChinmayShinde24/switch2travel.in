@@ -14,7 +14,7 @@ export function HeroSection() {
     <HeroSpotlightProvider>
       <section
         aria-label="Featured destinations"
-        className="flex min-h-[calc(100dvh-4.5rem)] flex-1 flex-col pt-2 md:min-h-[calc(100dvh-5rem)]"
+        className="page-padding-x flex min-h-[calc(100dvh-4.5rem)] flex-1 flex-col pt-2 md:min-h-[calc(100dvh-5rem)]"
       >
         <BentoCell className="relative flex flex-1 overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950 p-0 shadow-[0_30px_80px_rgba(15,23,42,0.28)] md:rounded-[2.25rem]">
           <motion.div

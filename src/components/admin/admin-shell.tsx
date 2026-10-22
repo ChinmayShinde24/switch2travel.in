@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import {
   AirplaneTakeOff01Icon,
   FolderLibraryIcon,
+  Image02Icon,
   NewsIcon,
   Home01Icon,
 } from "@hugeicons/core-free-icons"
@@ -24,9 +25,16 @@ const NAV = [
     primary: true,
   },
   {
+    href: "/admin/ads",
+    label: "Ads",
+    description: "Home banners",
+    icon: Image02Icon,
+    primary: false,
+  },
+  {
     href: "/admin/categories",
     label: "Categories",
-    description: "Home rail tags",
+    description: "Tags & cities",
     icon: FolderLibraryIcon,
     primary: false,
   },

@@ -1,5 +1,5 @@
-import { CategoriesPanel } from "@/components/admin/categories-panel"
+import { TaxonomyPanel } from "@/components/admin/taxonomy-panel"
 
 export default function AdminCategoriesPage() {
-  return <CategoriesPanel />
+  return <TaxonomyPanel />
 }

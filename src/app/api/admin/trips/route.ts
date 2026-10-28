@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/db"
 import { Trip } from "@/models/Trip"
 import { createTripSchema } from "@/lib/trip-validation"
 import {
-  assertCategoryExists,
+  assertCategoriesExist,
   assertCityExists,
   ensureUniqueTripSlug,
   toPublicTrip,
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     await connectDB()
 
-    const categoryCheck = await assertCategoryExists(parsed.data.categoryId)
+    const categoryCheck = await assertCategoriesExist(parsed.data.categoryIds)
     if (!categoryCheck.ok) {
       return NextResponse.json({ error: categoryCheck.error }, { status: 400 })
     }
@@ -82,6 +82,7 @@ export async function POST(request: Request) {
     const created = await Trip.create({
       title: data.title,
       slug,
+      categoryIds: data.categoryIds,
       categoryId: data.categoryId,
       cityId: data.cityId,
       status: data.status,

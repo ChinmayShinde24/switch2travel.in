@@ -4,7 +4,11 @@ import { connectDB } from "@/lib/db"
 import { Trip } from "@/models/Trip"
 import { Category } from "@/models/Category"
 import { City } from "@/models/City"
-import { PUBLIC_TRIP_FILTER, toPublicTrips } from "@/lib/trip-server"
+import {
+  categoryMatchFilter,
+  PUBLIC_TRIP_FILTER,
+  toPublicTrips,
+} from "@/lib/trip-server"
 
 function isObjectId(value: string) {
   return Types.ObjectId.isValid(value) && value.length === 24
@@ -23,13 +27,13 @@ export async function GET(request: Request) {
 
     if (categoryParam) {
       if (isObjectId(categoryParam)) {
-        filter.categoryId = categoryParam
+        Object.assign(filter, categoryMatchFilter(categoryParam))
       } else {
         const category = await Category.findOne({ slug: categoryParam }).lean()
         if (!category) {
           return NextResponse.json({ trips: [] })
         }
-        filter.categoryId = category._id
+        Object.assign(filter, categoryMatchFilter(String(category._id)))
       }
     }
 

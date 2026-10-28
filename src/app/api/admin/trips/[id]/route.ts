@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/db"
 import { Trip } from "@/models/Trip"
 import { updateTripSchema } from "@/lib/trip-validation"
 import {
-  assertCategoryExists,
+  assertCategoriesExist,
   assertCityExists,
   toPublicTrip,
 } from "@/lib/trip-server"
@@ -61,15 +61,18 @@ export async function PATCH(request: Request, { params }: Params) {
       return NextResponse.json({ error: "Trip not found" }, { status: 404 })
     }
 
-    if (data.categoryId !== undefined) {
-      const categoryCheck = await assertCategoryExists(data.categoryId)
+    if (data.categoryIds !== undefined) {
+      const categoryCheck = await assertCategoriesExist(data.categoryIds)
       if (!categoryCheck.ok) {
         return NextResponse.json(
           { error: categoryCheck.error },
           { status: 400 }
         )
       }
-      trip.categoryId = data.categoryId as never
+      trip.set("categoryIds", data.categoryIds)
+      if (data.categoryIds[0]) {
+        trip.categoryId = data.categoryIds[0] as never
+      }
     }
 
     if (data.cityId !== undefined) {

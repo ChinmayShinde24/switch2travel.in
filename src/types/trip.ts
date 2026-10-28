@@ -49,8 +49,11 @@ export type Trip = {
   id: string
   title: string
   slug: string
+  /** First category — kept for older clients. */
   categoryId: string
   category: TripCategorySummary | null
+  categoryIds: string[]
+  categories: TripCategorySummary[]
   cityId: string | null
   city: TripCitySummary | null
   status: TripStatus
@@ -79,7 +82,7 @@ export type Trip = {
 
 export type CreateTripInput = {
   title: string
-  categoryId: string
+  categoryIds: string[]
   cityId: string
   status?: TripStatus
   visibility?: TripVisibility
@@ -103,7 +106,7 @@ export type CreateTripInput = {
 
 export type UpdateTripInput = {
   title?: string
-  categoryId?: string
+  categoryIds?: string[]
   cityId?: string
   cardImage?: TripImage
   pickup?: string

@@ -63,7 +63,12 @@ const tripSchema = new Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
-      required: true,
+      required: false,
+      index: true,
+    },
+    categoryIds: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Category" }],
+      default: [],
       index: true,
     },
     cityId: {
@@ -167,6 +172,7 @@ const tripSchema = new Schema(
 
 tripSchema.index({ status: 1, visibility: 1 })
 tripSchema.index({ categoryId: 1, status: 1, visibility: 1 })
+tripSchema.index({ categoryIds: 1, status: 1, visibility: 1 })
 tripSchema.index({ cityId: 1, status: 1, visibility: 1 })
 
 export type TripDocument = InferSchemaType<typeof tripSchema> & {

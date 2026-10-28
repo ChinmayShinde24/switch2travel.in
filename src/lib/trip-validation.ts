@@ -54,10 +54,22 @@ const objectIdString = z
   .trim()
   .regex(/^[a-fA-F0-9]{24}$/, "Invalid category id")
 
+function uniqueCategoryIds(
+  categoryIds?: string[],
+  categoryId?: string
+) {
+  const ids = [
+    ...(categoryIds ?? []),
+    ...(categoryId ? [categoryId] : []),
+  ]
+  return [...new Set(ids)]
+}
+
 export const createTripSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required").max(160),
-    categoryId: objectIdString,
+    categoryIds: z.array(objectIdString).optional(),
+    categoryId: objectIdString.optional(),
     cityId: objectIdString,
     status: z.enum(TRIP_STATUSES).optional(),
     visibility: z.enum(TRIP_VISIBILITIES).optional(),
@@ -80,35 +92,50 @@ export const createTripSchema = z
     metaTitle: z.string().trim().max(60).optional(),
     metaDescription: z.string().trim().max(160).optional(),
   })
-  .superRefine((value, ctx) => uniqueItineraryDays(value.itinerary, ctx))
-  .transform((value) => ({
-    title: value.title,
-    categoryId: value.categoryId,
-    cityId: value.cityId,
-    status: value.status ?? ("draft" as const),
-    visibility: value.visibility ?? ("active" as const),
-    cardImage: value.cardImage,
-    pickup: value.pickup,
-    drop: value.drop,
-    durationDays: value.durationDays,
-    startingPrice: value.startingPrice,
-    heroImage: value.heroImage,
-    galleryImages: value.galleryImages ?? [],
-    overview: value.overview,
-    itinerary: value.itinerary,
-    inclusions: value.inclusions ?? "",
-    exclusions: value.exclusions ?? "",
-    cancellationPolicy: value.cancellationPolicy ?? "",
-    paymentPolicy: value.paymentPolicy ?? "",
-    faqs: value.faqs ?? [],
-    metaTitle: value.metaTitle,
-    metaDescription: value.metaDescription,
-    slug: slugify(value.title),
-  }))
+  .superRefine((value, ctx) => {
+    uniqueItineraryDays(value.itinerary, ctx)
+    const ids = uniqueCategoryIds(value.categoryIds, value.categoryId)
+    if (ids.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Select at least one category",
+        path: ["categoryIds"],
+      })
+    }
+  })
+  .transform((value) => {
+    const categoryIds = uniqueCategoryIds(value.categoryIds, value.categoryId)
+    return {
+      title: value.title,
+      categoryIds,
+      categoryId: categoryIds[0],
+      cityId: value.cityId,
+      status: value.status ?? ("draft" as const),
+      visibility: value.visibility ?? ("active" as const),
+      cardImage: value.cardImage,
+      pickup: value.pickup,
+      drop: value.drop,
+      durationDays: value.durationDays,
+      startingPrice: value.startingPrice,
+      heroImage: value.heroImage,
+      galleryImages: value.galleryImages ?? [],
+      overview: value.overview,
+      itinerary: value.itinerary,
+      inclusions: value.inclusions ?? "",
+      exclusions: value.exclusions ?? "",
+      cancellationPolicy: value.cancellationPolicy ?? "",
+      paymentPolicy: value.paymentPolicy ?? "",
+      faqs: value.faqs ?? [],
+      metaTitle: value.metaTitle,
+      metaDescription: value.metaDescription,
+      slug: slugify(value.title),
+    }
+  })
 
 export const updateTripSchema = z
   .object({
     title: z.string().trim().min(1).max(160).optional(),
+    categoryIds: z.array(objectIdString).optional(),
     categoryId: objectIdString.optional(),
     cityId: objectIdString.optional(),
     cardImage: tripImageSchema.optional(),
@@ -130,6 +157,28 @@ export const updateTripSchema = z
   })
   .superRefine((value, ctx) => {
     if (value.itinerary) uniqueItineraryDays(value.itinerary, ctx)
+    if (value.categoryIds === undefined && value.categoryId === undefined) {
+      return
+    }
+    const ids = uniqueCategoryIds(value.categoryIds, value.categoryId)
+    if (ids.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Select at least one category",
+        path: ["categoryIds"],
+      })
+    }
+  })
+  .transform((value) => {
+    if (value.categoryIds === undefined && value.categoryId === undefined) {
+      return value
+    }
+    const categoryIds = uniqueCategoryIds(value.categoryIds, value.categoryId)
+    return {
+      ...value,
+      categoryIds,
+      categoryId: categoryIds[0],
+    }
   })
 
 export const updateTripStatusSchema = z.object({

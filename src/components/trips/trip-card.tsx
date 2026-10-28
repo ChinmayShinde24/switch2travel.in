@@ -86,9 +86,13 @@ export function TripCard({ trip, index = 0, className }: TripCardProps) {
           <span className="font-open-sans inline-flex items-center rounded-full border border-white/20 bg-black/35 px-2.5 py-1 text-[0.62rem] font-semibold tracking-[0.16em] text-white uppercase backdrop-blur-md">
             {durationLabel}
           </span>
-          {trip.category ? (
-            <Badge className="rounded-full border-white/15 bg-sky-600/90 px-2.5 py-0.5 text-[0.62rem] font-semibold tracking-wide text-white hover:bg-sky-600">
-              {trip.category.name}
+          {(trip.categories?.length
+            ? trip.categories.map((c) => c.name).join(" · ")
+            : trip.category?.name) ? (
+            <Badge className="max-w-[60%] truncate rounded-full border-white/15 bg-sky-600/90 px-2.5 py-0.5 text-[0.62rem] font-semibold tracking-wide text-white hover:bg-sky-600">
+              {trip.categories?.length
+                ? trip.categories.map((c) => c.name).join(" · ")
+                : trip.category?.name}
             </Badge>
           ) : null}
         </div>

@@ -119,6 +119,27 @@ export async function ensureUniqueTripSlug(
   }
 }
 
+export function tripCategoryIdsFromDoc(doc: {
+  categoryIds?: unknown
+  categoryId?: unknown
+}): string[] {
+  const fromArray = Array.isArray(doc.categoryIds)
+    ? doc.categoryIds.map((id) => String(id))
+    : []
+  if (fromArray.length > 0) {
+    return [...new Set(fromArray)]
+  }
+  if (doc.categoryId) return [String(doc.categoryId)]
+  return []
+}
+
+export function categoryMatchFilter(categoryId: string) {
+  const id = new Types.ObjectId(categoryId)
+  return {
+    $or: [{ categoryIds: id }, { categoryId: id }],
+  }
+}
+
 export async function resolveTripCategorySummary(
   categoryId: Types.ObjectId | string
 ): Promise<TripCategorySummary | null> {
@@ -131,12 +152,45 @@ export async function resolveTripCategorySummary(
   }
 }
 
+export async function resolveTripCategorySummaries(
+  categoryIds: string[]
+): Promise<TripCategorySummary[]> {
+  if (categoryIds.length === 0) return []
+  const docs = await Category.find({
+    _id: { $in: categoryIds },
+  } as never).lean()
+  const byId = new Map(docs.map((doc) => [String(doc._id), doc]))
+  return categoryIds
+    .map((id) => {
+      const doc = byId.get(id)
+      if (!doc) return null
+      return {
+        id: String(doc._id),
+        name: doc.name,
+        slug: doc.slug,
+      }
+    })
+    .filter((item): item is TripCategorySummary => item !== null)
+}
+
 export async function assertCategoryExists(categoryId: string) {
   const doc = await Category.findById(categoryId).lean()
   if (!doc) {
     return { ok: false as const, error: "Category not found" }
   }
   return { ok: true as const, category: doc }
+}
+
+export async function assertCategoriesExist(categoryIds: string[]) {
+  const unique = [...new Set(categoryIds)]
+  if (unique.length === 0) {
+    return { ok: false as const, error: "Select at least one category" }
+  }
+  const docs = await Category.find({ _id: { $in: unique } } as never).lean()
+  if (docs.length !== unique.length) {
+    return { ok: false as const, error: "One or more categories not found" }
+  }
+  return { ok: true as const }
 }
 
 export { assertCityExists }
@@ -155,17 +209,21 @@ export async function resolveTripCitySummary(
 }
 
 export async function toPublicTrip(doc: TripDocument): Promise<Trip> {
-  const [category, city] = await Promise.all([
-    resolveTripCategorySummary(doc.categoryId),
+  const categoryIds = tripCategoryIdsFromDoc(doc)
+  const [categories, city] = await Promise.all([
+    resolveTripCategorySummaries(categoryIds),
     resolveTripCitySummary(doc.cityId),
   ])
+  const category = categories[0] ?? null
 
   const trip: Trip = {
     id: String(doc._id),
     title: doc.title,
     slug: doc.slug,
-    categoryId: String(doc.categoryId),
+    categoryId: categoryIds[0] ?? "",
     category,
+    categoryIds,
+    categories,
     cityId: doc.cityId ? String(doc.cityId) : null,
     city,
     status: doc.status as Trip["status"],
@@ -216,7 +274,9 @@ export async function listPublishedTrips(
   options: ListPublishedTripsOptions = {}
 ): Promise<Trip[]> {
   const filter: Record<string, unknown> = { ...PUBLIC_TRIP_FILTER }
-  if (options.categoryId) filter.categoryId = options.categoryId
+  if (options.categoryId) {
+    Object.assign(filter, categoryMatchFilter(options.categoryId))
+  }
   if (options.cityId) filter.cityId = options.cityId
   const docs = await TripModel.find(filter).sort({ createdAt: -1 })
   return toPublicTrips(docs)

@@ -32,7 +32,11 @@ export function HomeDiscover({
 
   const filteredTrips = useMemo(() => {
     if (!activeCategoryId) return trips
-    return trips.filter((trip) => trip.categoryId === activeCategoryId)
+    return trips.filter((trip) =>
+      trip.categoryIds?.length
+        ? trip.categoryIds.includes(activeCategoryId)
+        : trip.categoryId === activeCategoryId
+    )
   }, [trips, activeCategoryId])
 
   const activeCategory = activeCategoryId
@@ -42,7 +46,11 @@ export function HomeDiscover({
   const categoryWithTrips = useMemo(
     () =>
       categories.filter((category) =>
-        trips.some((trip) => trip.categoryId === category.id)
+        trips.some((trip) =>
+          trip.categoryIds?.length
+            ? trip.categoryIds.includes(category.id)
+            : trip.categoryId === category.id
+        )
       ),
     [categories, trips]
   )

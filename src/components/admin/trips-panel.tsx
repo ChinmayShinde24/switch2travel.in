@@ -168,7 +168,7 @@ export function TripsPanel() {
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[56px] pl-4">Card</TableHead>
                 <TableHead>Trip</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Categories</TableHead>
                 <TableHead>City</TableHead>
                 <TableHead className="w-[100px]">Status</TableHead>
                 <TableHead className="w-[100px]">Visibility</TableHead>
@@ -203,8 +203,10 @@ export function TripsPanel() {
                         /{trip.slug}
                       </p>
                     </TableCell>
-                    <TableCell className="font-lato text-sm text-slate-600">
-                      {trip.category?.name ?? "—"}
+                    <TableCell className="font-lato max-w-[220px] truncate text-sm text-slate-600">
+                      {trip.categories?.length
+                        ? trip.categories.map((c) => c.name).join(", ")
+                        : (trip.category?.name ?? "—")}
                     </TableCell>
                     <TableCell className="font-lato text-sm text-slate-600">
                       {trip.city?.name ?? "—"}

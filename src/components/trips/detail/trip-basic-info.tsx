@@ -39,8 +39,10 @@ export function TripBasicInfo() {
       icon: Location01Icon,
     },
     {
-      label: "Category",
-      value: trip.category?.name ?? "Trip",
+      label: trip.categories?.length > 1 ? "Categories" : "Category",
+      value: trip.categories?.length
+        ? trip.categories.map((c) => c.name).join(", ")
+        : (trip.category?.name ?? "Trip"),
       icon: Briefcase01Icon,
     },
     {
@@ -92,7 +94,11 @@ export function TripBasicInfo() {
           </h2>
           <p className="font-lato mt-2 text-sm text-slate-500">
             {formatDuration(trip.durationDays)}
-            {trip.category?.name ? ` · ${trip.category.name}` : ""}
+            {trip.categories?.length
+              ? ` · ${trip.categories.map((c) => c.name).join(", ")}`
+              : trip.category?.name
+                ? ` · ${trip.category.name}`
+                : ""}
             {trip.city?.name ? ` · ${trip.city.name}` : ""}
           </p>
         </div>

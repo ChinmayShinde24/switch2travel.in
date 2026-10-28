@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Add01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
+import { Add01Icon, Delete02Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 import type { Category } from "@/types/category"
 import type { City } from "@/types/city"
 import type {
@@ -34,6 +34,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 async function parseError(response: Response) {
   const data = (await response.json().catch(() => null)) as {
@@ -44,7 +51,7 @@ async function parseError(response: Response) {
 
 type FormState = {
   title: string
-  categoryId: string
+  categoryIds: string[]
   cityId: string
   status: TripStatus
   visibility: TripVisibility
@@ -73,7 +80,7 @@ function emptyItineraryDay(day: number): TripItineraryDay {
 function emptyForm(): FormState {
   return {
     title: "",
-    categoryId: "",
+    categoryIds: [],
     cityId: "",
     status: "draft",
     visibility: "active",
@@ -103,7 +110,11 @@ function isEmptyHtml(html: string) {
 function tripToForm(trip: Trip): FormState {
   return {
     title: trip.title,
-    categoryId: trip.categoryId,
+    categoryIds: trip.categoryIds?.length
+      ? trip.categoryIds
+      : trip.categoryId
+        ? [trip.categoryId]
+        : [],
     cityId: trip.cityId ?? "",
     status: trip.status,
     visibility: trip.visibility,
@@ -274,8 +285,8 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
       toast.error("Title is required")
       return
     }
-    if (!form.categoryId) {
-      toast.error("Select a category")
+    if (form.categoryIds.length === 0) {
+      toast.error("Select at least one category")
       return
     }
     if (!form.cityId) {
@@ -332,7 +343,7 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
 
     const payload = {
       title: form.title.trim(),
-      categoryId: form.categoryId,
+      categoryIds: form.categoryIds,
       cityId: form.cityId,
       ...(mode === "create"
         ? { status: form.status, visibility: form.visibility }
@@ -376,6 +387,10 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
       setSaving(false)
     }
   }
+
+  const selectedCategoryNames = categories
+    .filter((category) => form.categoryIds.includes(category.id))
+    .map((category) => category.name)
 
   return (
     <form onSubmit={(e) => void onSubmit(e)} className="mx-auto w-full max-w-5xl">
@@ -451,7 +466,7 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
             </p>
             <p className="font-lato mt-1 text-sm text-slate-500">
               These fields power the trip card: title, pickup/drop, days, price,
-              category, and the card image.
+              categories, and the card image.
             </p>
             <Separator className="my-4" />
 
@@ -481,36 +496,70 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label>Category</Label>
-                  <Select
-                    value={form.categoryId || null}
-                    onValueChange={(value) => {
-                      if (typeof value === "string") {
-                        setForm((prev) => ({ ...prev, categoryId: value }))
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-full rounded-xl">
-                      <SelectValue placeholder="Select category">
-                        {(value) => {
-                          if (typeof value !== "string" || !value) {
-                            return "Select category"
-                          }
-                          return (
-                            categories.find((c) => c.id === value)?.name ??
-                            "Select category"
-                          )
-                        }}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Categories</Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      type="button"
+                      disabled={categories.length === 0}
+                      className="flex h-9 w-full items-center justify-between gap-1.5 rounded-xl border border-input bg-input/30 px-3 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <span
+                        className={
+                          selectedCategoryNames.length > 0
+                            ? "font-lato truncate text-left text-slate-800"
+                            : "font-lato truncate text-left text-muted-foreground"
+                        }
+                      >
+                        {categories.length === 0
+                          ? "No categories yet"
+                          : selectedCategoryNames.length > 0
+                            ? selectedCategoryNames.join(", ")
+                            : "Select categories"}
+                      </span>
+                      <HugeiconsIcon
+                        icon={UnfoldMoreIcon}
+                        strokeWidth={2}
+                        className="pointer-events-none size-4 shrink-0 text-muted-foreground"
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="max-h-56 w-(--anchor-width) p-1"
+                    >
+                      {categories.map((category) => {
+                        const checked = form.categoryIds.includes(category.id)
+                        return (
+                          <DropdownMenuItem
+                            key={category.id}
+                            closeOnClick={false}
+                            className="gap-2.5"
+                            onClick={() => {
+                              setForm((prev) => ({
+                                ...prev,
+                                categoryIds: checked
+                                  ? prev.categoryIds.filter(
+                                      (id) => id !== category.id
+                                    )
+                                  : [...prev.categoryIds, category.id],
+                              }))
+                            }}
+                          >
+                            <Checkbox
+                              checked={checked}
+                              className="pointer-events-none"
+                              tabIndex={-1}
+                            />
+                            <span className="font-lato text-sm text-slate-800">
+                              {category.name}
+                            </span>
+                          </DropdownMenuItem>
+                        )
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <p className="font-lato text-[11px] text-slate-500">
+                    Select every category this trip should appear in.
+                  </p>
                 </div>
                 <div className="grid gap-2">
                   <Label>City</Label>

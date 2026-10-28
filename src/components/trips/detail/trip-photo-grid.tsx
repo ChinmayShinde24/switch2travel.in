@@ -39,22 +39,6 @@ export function TripPhotoGrid() {
             sizes="(max-width: 768px) 100vw, 62vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent"
-          />
-          <div className="absolute inset-x-0 top-[18%] flex flex-col items-center px-4 text-center sm:top-[22%]">
-            <h1 className="font-display text-2xl font-bold tracking-[0.08em] text-amber-300 uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-3xl md:text-4xl md:tracking-[0.12em]">
-              {trip.title}
-            </h1>
-            {trip.city?.name || trip.category?.name ? (
-              <span className="font-lato mt-2.5 inline-flex rounded-full bg-white/95 px-3 py-1 text-xs font-medium text-slate-800 shadow-sm sm:text-sm">
-                {trip.city?.name
-                  ? `Explore ${trip.city.name}`
-                  : trip.category?.name}
-              </span>
-            ) : null}
-          </div>
         </button>
 
         {/* Supporting stack */}

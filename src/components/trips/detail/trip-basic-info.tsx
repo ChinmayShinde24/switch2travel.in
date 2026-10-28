@@ -89,9 +89,9 @@ export function TripBasicInfo() {
           <p className="font-open-sans text-[11px] font-semibold tracking-[0.18em] text-sky-700 uppercase">
             Details
           </p>
-          <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             {trip.title}
-          </h2>
+          </h1>
           <p className="font-lato mt-2 text-sm text-slate-500">
             {formatDuration(trip.durationDays)}
             {trip.categories?.length

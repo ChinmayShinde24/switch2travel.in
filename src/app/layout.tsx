@@ -53,6 +53,27 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   title: "Switch2Travel",
   description: "Travel made easier",
+  icons: {
+    icon: [
+      {
+        url: "/favicon-white.png",
+        type: "image/png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-32-black.png",
+        type: "image/png",
+        sizes: "32x32",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/favicon-16-black.png",
+        type: "image/png",
+        sizes: "16x16",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
 }
 
 export default function RootLayout({

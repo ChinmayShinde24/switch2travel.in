@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Link from "next/link"
 import type { Ad } from "@/types/ad"
 import type { City } from "@/types/city"
 import type { Trip } from "@/types/trip"
@@ -9,6 +10,7 @@ import { AdCarousel } from "@/components/home/ad-carousel"
 import { CategoryRail } from "@/components/home/category-rail"
 import { CityExplorer } from "@/components/home/city-explorer"
 import { TripCardGrid } from "@/components/trips/trip-card-grid"
+import { Button } from "@/components/ui/button"
 
 type HomeDiscoverProps = {
   categories: TripCategory[]
@@ -54,6 +56,9 @@ export function HomeDiscover({
       ),
     [categories, trips]
   )
+
+  const previewTrips = filteredTrips.slice(0, 3)
+  const hasMoreTrips = filteredTrips.length > 3
 
   const tripCountByCity = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -104,7 +109,7 @@ export function HomeDiscover({
           </div>
 
           <TripCardGrid
-            trips={filteredTrips}
+            trips={previewTrips}
             emptyMessage={
               trips.length === 0
                 ? "No published trips yet."
@@ -118,6 +123,18 @@ export function HomeDiscover({
                   : "Pick another category or check back soon."
             }
           />
+
+          {hasMoreTrips ? (
+            <div className="mt-6 flex justify-center sm:mt-8">
+              <Button
+                nativeButton={false}
+                render={<Link href="/trips" />}
+                className="rounded-xl bg-sky-600 text-white hover:bg-sky-700"
+              >
+                View more
+              </Button>
+            </div>
+          ) : null}
         </div>
       </section>
 

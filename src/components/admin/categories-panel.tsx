@@ -436,7 +436,7 @@ export function CategoriesPanel() {
                   <p className="mt-1 text-[11px] text-slate-500">
                     {uploading
                       ? "Uploading to ImageKit…"
-                      : "JPG/PNG/WebP · stored under /switch2travel/categories"}
+                      : "Portrait · 800 × 1100 · keep under 25 MP so upload does not fail."}
                   </p>
                 </div>
               </div>

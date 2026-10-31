@@ -436,7 +436,7 @@ export function CitiesPanel() {
                   <p className="mt-1 text-[11px] text-slate-500">
                     {uploading
                       ? "Uploading to ImageKit…"
-                      : "JPG/PNG/WebP · stored under /switch2travel/cities"}
+                      : "Portrait · 900 × 1200 · keep under 25 MP so upload does not fail."}
                   </p>
                 </div>
               </div>

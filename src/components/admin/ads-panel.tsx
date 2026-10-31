@@ -548,7 +548,7 @@ export function AdsPanel() {
               <p className="text-[11px] text-slate-500">
                 {uploading
                   ? "Uploading to ImageKit…"
-                  : "JPG/PNG/WebP · stored under /switch2travel/ads · prefer ~1920×400"}
+                  : "Wide landscape · 1920 × 400 · no text needed in the file."}
               </p>
             </div>
           </div>

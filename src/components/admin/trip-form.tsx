@@ -719,11 +719,11 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
                     className="rounded-xl"
                   />
                 </div>
-                {uploading === "card" ? (
-                  <p className="font-lato text-[11px] text-sky-700">
-                    Uploading card image…
-                  </p>
-                ) : null}
+                <p className="font-lato text-[11px] text-slate-500">
+                  {uploading === "card"
+                    ? "Uploading card image…"
+                    : "Landscape · 1600 × 1000 · this is the home / listing card."}
+                </p>
               </div>
             </div>
           </section>
@@ -756,6 +756,10 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
                     className="rounded-xl"
                   />
                 </div>
+                <p className="font-lato text-[11px] text-slate-500">
+                  Landscape · 1920 × 1080 · big photo on the trip page. No text
+                  in the image.
+                </p>
               </div>
 
               <div className="grid gap-2">
@@ -798,7 +802,7 @@ export function TripForm({ mode, tripId, initialTrip }: TripFormProps) {
                   </div>
                 ) : (
                   <p className="font-lato text-[11px] text-slate-500">
-                    Optional — add as many as you need.
+                    Optional. Landscape · 1600 × 900 · same as the hero photo.
                   </p>
                 )}
               </div>

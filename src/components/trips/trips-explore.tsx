@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useLoading } from "@/lib/loading-context"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Location01Icon } from "@hugeicons/core-free-icons"
 import type { City } from "@/types/city"
@@ -25,6 +26,7 @@ export function TripsExplore({ cities, trips }: TripsExploreProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { cover } = useLoading()
   const activeSlug = searchParams.get("city")?.trim().toLowerCase() || null
 
   const selectedCity = useMemo(
@@ -45,12 +47,16 @@ export function TripsExplore({ cities, trips }: TripsExploreProps) {
     return trips.filter((trip) => tripMatchesCity(trip, selectedCity))
   }, [selectedCity, trips])
 
-  function goToCity(slug: string | null) {
+  async function goToCity(slug: string | null) {
+    if (slug === activeSlug || (!slug && !activeSlug)) return
     const params = new URLSearchParams(searchParams.toString())
     if (slug) params.set("city", slug)
     else params.delete("city")
     const query = params.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const href = query ? `${pathname}?${query}` : pathname
+    await cover(() => {
+      router.replace(href, { scroll: false })
+    })
   }
 
   return (
@@ -120,7 +126,7 @@ function CitySidebar({
   activeSlug: string | null
   tripCountByCity: Record<string, number>
   totalTrips: number
-  onSelect: (slug: string | null) => void
+  onSelect: (slug: string | null) => void | Promise<void>
 }) {
   return (
     <aside className="lg:sticky lg:top-24">

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import { motion } from "motion/react"
 import {
   ArrowRight01Icon,
@@ -36,7 +36,7 @@ export function HeroDestinationCard({
         className
       )}
     >
-      <Link
+      <CityTripLink
         href={destination.href}
         className={cn(
           "group absolute inset-0 overflow-hidden rounded-[1.85rem] outline-none",
@@ -119,7 +119,7 @@ export function HeroDestinationCard({
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-3.5" />
           </span>
         </div>
-      </Link>
+      </CityTripLink>
     </motion.div>
   )
 }

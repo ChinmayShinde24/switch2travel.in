@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import type { Trip } from "@/types/trip"
 import { TripForm } from "@/components/admin/trip-form"
+import { SwitchLoader } from "@/components/switch-loader"
 
 async function parseError(response: Response) {
   const data = (await response.json().catch(() => null)) as {
@@ -43,8 +44,8 @@ export default function AdminEditTripPage() {
 
   if (loading || !trip) {
     return (
-      <div className="font-lato flex min-h-[320px] items-center justify-center text-sm text-slate-500">
-        Loading trip…
+      <div className="flex min-h-[320px] items-center justify-center">
+        <SwitchLoader height={200} label="Loading trip..." />
       </div>
     )
   }

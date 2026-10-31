@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import type { City } from "@/types/city"
 import { cn } from "@/lib/utils"
 
@@ -32,7 +33,7 @@ export function CityFilterRail({ cities, activeSlug }: CityFilterRailProps) {
       {cities.map((city) => {
         const active = city.slug === activeSlug
         return (
-          <Link
+          <CityTripLink
             key={city.id}
             href={`/trips?city=${city.slug}`}
             className={cn(
@@ -43,7 +44,7 @@ export function CityFilterRail({ cities, activeSlug }: CityFilterRailProps) {
             )}
           >
             {city.name}
-          </Link>
+          </CityTripLink>
         )
       })}
     </div>

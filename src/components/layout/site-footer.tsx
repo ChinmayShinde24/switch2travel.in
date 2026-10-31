@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Facebook02Icon,
@@ -123,12 +124,12 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-2.5">
               {REGION_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <CityTripLink
                     href={link.href}
                     className="font-display text-sm font-medium tracking-tight text-slate-600 transition-colors hover:text-sky-700"
                   >
                     {link.label}
-                  </Link>
+                  </CityTripLink>
                 </li>
               ))}
             </ul>

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import { motion } from "motion/react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -50,7 +50,7 @@ export function TripCard({ trip, index = 0, className }: TripCardProps) {
       }}
       className={cn("group h-full", className)}
     >
-      <Link
+      <CityTripLink
         href={href}
         className={cn(
           "relative flex h-full min-h-[22rem] flex-col overflow-hidden rounded-[1.35rem] outline-none sm:min-h-[24rem] sm:rounded-[1.5rem] md:min-h-[26rem]",
@@ -141,7 +141,7 @@ export function TripCard({ trip, index = 0, className }: TripCardProps) {
             </span>
           </div>
         </div>
-      </Link>
+      </CityTripLink>
     </motion.article>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import { motion, useReducedMotion } from "motion/react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -46,7 +46,7 @@ function CityExplorerCard({
       className="shrink-0"
       aria-hidden={duplicate || undefined}
     >
-      <Link
+      <CityTripLink
         href={`/trips?city=${city.slug}`}
         tabIndex={duplicate ? -1 : undefined}
         className={cn(
@@ -100,7 +100,7 @@ function CityExplorerCard({
             />
           </span>
         </div>
-      </Link>
+      </CityTripLink>
     </motion.div>
   )
 }

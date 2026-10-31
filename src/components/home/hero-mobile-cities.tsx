@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import { useHeroSpotlight } from "@/components/home/hero-spotlight"
 import { cn } from "@/lib/utils"
 
@@ -42,7 +42,7 @@ export function HeroMobileCities() {
           const active = index === activeIndex
 
           return (
-            <Link
+            <CityTripLink
               key={destination.id}
               href={destination.href}
               className="flex w-[4.85rem] shrink-0 flex-col items-center gap-2 outline-none focus-visible:ring-[3px] focus-visible:ring-cyan-200/50"
@@ -76,7 +76,7 @@ export function HeroMobileCities() {
               >
                 {destination.title}
               </span>
-            </Link>
+            </CityTripLink>
           )
         })}
       </div>

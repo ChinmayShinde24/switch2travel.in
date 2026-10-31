@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { CityTripLink } from "@/components/city-trip-link"
 import type { Ad } from "@/types/ad"
 import { cn } from "@/lib/utils"
 import {
@@ -103,13 +103,13 @@ export function AdCarousel({ ads }: AdCarouselProps) {
               return (
                 <CarouselItem key={ad.id} className="basis-full pl-0">
                   {href ? (
-                    <Link
+                    <CityTripLink
                       href={href}
                       className="block outline-none focus-visible:ring-[3px] focus-visible:ring-sky-400/50 focus-visible:ring-offset-2"
                       aria-label={`View trip: ${ad.trip?.title ?? ad.title}`}
                     >
                       {slide}
-                    </Link>
+                    </CityTripLink>
                   ) : (
                     slide
                   )}

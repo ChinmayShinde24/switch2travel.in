@@ -14,10 +14,10 @@ dns.setDefaultResultOrder("ipv4first")
 dns.setServers(["8.8.8.8", "1.1.1.1"])
 
 const SRV_URI =
-  "mongodb+srv://switch2travel_db_user:RmSqh3UC1xpwqYAU@switch2travel.y9ghcra.mongodb.net/switch2travel"
+  "mongodb://localhost:27017/switch2travel"
 const DIRECT_URI =
-  "mongodb://switch2travel_db_user:RmSqh3UC1xpwqYAU@ac-yytyofs-shard-00-00.y9ghcra.mongodb.net:27017,ac-yytyofs-shard-00-01.y9ghcra.mongodb.net:27017,ac-yytyofs-shard-00-02.y9ghcra.mongodb.net:27017/switch2travel?ssl=true&replicaSet=atlas-oytuia-shard-0&authSource=admin&retryWrites=true&w=majority"
-
+  "mongodb://localhost:27017/switch2travel"
+  
 const HONEYMOON = new mongoose.Types.ObjectId("6adda7eed1ad0ab6a71bae9e")
 const POPULAR = new mongoose.Types.ObjectId("6adda9bcf34a441f5a5298ac")
 const BACKPACKING = new mongoose.Types.ObjectId("6adda9d5f34a441f5a5298ad")
